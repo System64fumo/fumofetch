@@ -80,22 +80,29 @@ int get_installed_packages() {
 }
 
 const char* get_memory_usage() {
-	struct sysinfo info;
-	sysinfo(&info);
+	static char buffer[BUFFER_SIZE];
+	FILE* meminfo = fopen("/proc/meminfo", "r");
 
-	double total_mem = (double)(info.totalram * info.mem_unit);
-	double used_mem = (double)((info.totalram - info.freeram) * info.mem_unit);
+	unsigned long total_mem = 0, free_mem = 0, buffers = 0, cached = 0, sreclaimable = 0, shmem = 0;
+	char label[32]; unsigned long value;
+
+	while (fscanf(meminfo, "%31s %lu kB", label, &value) == 2) {
+		if (!strcmp(label, "MemTotal:")) total_mem = value;
+		else if (!strcmp(label, "MemFree:")) free_mem = value;
+		else if (!strcmp(label, "Buffers:")) buffers = value;
+		else if (!strcmp(label, "Cached:")) cached = value;
+		else if (!strcmp(label, "SReclaimable:")) sreclaimable = value;
+		else if (!strcmp(label, "Shmem:")) shmem = value;
+	}
+	fclose(meminfo);
+
+	unsigned long used_mem = total_mem - free_mem - buffers - cached + shmem - sreclaimable;
 
 	const char* suffix = "MB";
-	if (total_mem > 1 << 30) {
-		total_mem /= 1 << 30;
-		used_mem /= 1 << 30;
-		suffix = "GB";
-	} else {
-		total_mem /= 1 << 20;
-		used_mem /= 1 << 20;
-	}
+	double display_total = total_mem / 1024.0, display_used = used_mem / 1024.0;
+	if (display_total > 1024) { display_total /= 1024.0; display_used /= 1024.0; suffix = "GB"; }
 
-	snprintf(buffer, BUFFER_SIZE, "%.2f %s / %.2f %s", used_mem, suffix, total_mem, suffix);
+	snprintf(buffer, BUFFER_SIZE, "%.2f %s / %.2f %s", display_used, suffix, display_total, suffix);
 	return buffer;
 }
+
