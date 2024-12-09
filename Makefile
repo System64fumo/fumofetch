@@ -21,7 +21,7 @@ logo.h: logo.txt
 	@echo "#define LOGO_H" >> logo.h
 	@echo "#define LOGO_HEIGHT" `wc -l logo.txt | cut -d ' ' -f 1` >> logo.h
 	@echo >> logo.h
-	@echo "const char* logo_array[] = {" >> logo.h
+	@echo "static const char* logo_array[] = {" >> logo.h
 	@while IFS= read -r line; do \
 		escaped_line=$$(echo "$$line" | sed 's/"/\\"/g' | sed 's/\\/\\\\/g'); \
 		echo "	\"$$escaped_line\"," >> logo.h; \
