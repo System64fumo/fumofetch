@@ -1,13 +1,6 @@
 #include "main.h"
-#include "logo.h"
 
 void setup_details() {
-	// Initialize an empty string array
-	details = malloc(LOGO_HEIGHT * sizeof(char*));
-	for (size_t i = 0; i < LOGO_HEIGHT; i++)
-		details[i] = strdup("");
-
-	// Set details
 	snprintf(details[DETAIL_OFFSET + 0], BUFFER_SIZE, "%s@%s", get_username(), get_hostname());
 	snprintf(details[DETAIL_OFFSET + 1], BUFFER_SIZE, "Distro - %s", get_distribution());
 	snprintf(details[DETAIL_OFFSET + 2], BUFFER_SIZE, "System - %s", get_machine_name());

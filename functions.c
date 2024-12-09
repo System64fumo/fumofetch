@@ -18,29 +18,34 @@ const char* get_distribution() {
 	if (file) {
 		while (fgets(buffer, BUFFER_SIZE, file)) {
 			if (strncmp(buffer, "PRETTY_NAME=", 12) == 0) {
-				char* name = strchr(buffer, '=');
-				if (name) {
-					name += 2;
-					name[strlen(name) - 2] = '\0';
-					strncpy(buffer, name, BUFFER_SIZE);
-					break;
-				}
+				char* name = buffer + 12;
+				name[strcspn(name, "\n")] = 0;
+				memmove(name, name + 1, strlen(name));
+				name[strlen(name) - 1] = '\0';
+				fclose(file);
+				return strdup(name);
 			}
 		}
-		fclose(file);
-	} else {
-		snprintf(buffer, BUFFER_SIZE, "Unknown");
 	}
-	return buffer;
+
+	fclose(file);
+	return "Unknown";
 }
 
 const char* get_machine_name() {
-	FILE* file = fopen("/sys/devices/virtual/dmi/id/board_name", "r");
-	if (file) {
-		fgets(buffer, BUFFER_SIZE, file);
+	FILE* file_arm = fopen("/sys/firmware/devicetree/base/model", "r");
+	FILE* file_x86 = fopen("/sys/devices/virtual/dmi/id/board_name", "r");
+
+	if (file_arm) {
+		fgets(buffer, BUFFER_SIZE, file_arm);
+		fclose(file_arm);
+	}
+	else if (file_x86) {
+		fgets(buffer, BUFFER_SIZE, file_x86);
 		buffer[strcspn(buffer, "\n")] = '\0';
-		fclose(file);
-	} else {
+		fclose(file_x86);
+	}
+	else {
 		snprintf(buffer, BUFFER_SIZE, "Unknown");
 	}
 	return buffer;

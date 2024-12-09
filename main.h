@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "logo.h"
 
 #define BUFFER_SIZE 128
 #define DETAIL_OFFSET 1
 
 static char buffer[BUFFER_SIZE];
-static char** details;
+static char details[LOGO_HEIGHT][BUFFER_SIZE];
 
 const char* get_username();
 const char* get_hostname();
