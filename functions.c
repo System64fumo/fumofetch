@@ -62,10 +62,17 @@ const char* get_uptime() {
 	sysinfo(&sys_info);
 
 	long seconds = sys_info.uptime;
-	int hours = seconds / 3600;
+	int days = seconds / (24 * 3600);
+	int hours = (seconds % (24 * 3600)) / 3600;
 	int minutes = (seconds % 3600) / 60;
 
-	snprintf(buffer, BUFFER_SIZE, "%dh, %dm", hours, minutes);
+	if (days > 0)
+		snprintf(buffer, BUFFER_SIZE, "%dd, %dh, %dm", days, hours, minutes);
+	else if (hours > 0)
+		snprintf(buffer, BUFFER_SIZE, "%dh, %dm", hours, minutes);
+	else
+		snprintf(buffer, BUFFER_SIZE, "%dm", minutes);
+
 	return buffer;
 }
 
