@@ -76,7 +76,7 @@ const char* get_uptime() {
 	return buffer;
 }
 
-int get_installed_packages_pacman() {
+static int get_installed_packages_pacman() {
 	int package_count = 0;
 	DIR* dir = opendir("/var/lib/pacman/local");
 	if (dir) {
@@ -91,7 +91,7 @@ int get_installed_packages_pacman() {
 	return package_count;
 }
 
-int get_installed_packages_emerge() {
+static int get_installed_packages_emerge() {
 	int package_count = 0;
 	DIR* dir = opendir("/var/db/pkg");
 	if (!dir)
@@ -121,7 +121,7 @@ int get_installed_packages_emerge() {
 	return package_count;
 }
 
-int get_installed_packages_dpkg() {
+static int get_installed_packages_dpkg() {
 	int package_count = 0;
 	FILE* file = fopen("/var/lib/dpkg/status", "r");
 	if (!file)
@@ -135,6 +135,12 @@ int get_installed_packages_dpkg() {
 
 	fclose(file);
 	return package_count;
+}
+
+int get_installed_packages() {
+	return   get_installed_packages_pacman()
+	       + get_installed_packages_emerge()
+	       + get_installed_packages_dpkg();
 }
 
 const char* get_memory_usage() {
