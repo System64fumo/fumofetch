@@ -6,7 +6,7 @@ void setup_details() {
 	snprintf(details[DETAIL_OFFSET + 2], BUFFER_SIZE, "System - %s", get_machine_name());
 	snprintf(details[DETAIL_OFFSET + 3], BUFFER_SIZE, "Kernel - %s", get_kernel());
 	snprintf(details[DETAIL_OFFSET + 4], BUFFER_SIZE, "Uptime - %s", get_uptime());
-	snprintf(details[DETAIL_OFFSET + 5], BUFFER_SIZE, "Pacman - %d", get_installed_packages());
+	snprintf(details[DETAIL_OFFSET + 5], BUFFER_SIZE, "PkgCnt - %d", get_installed_packages());
 	snprintf(details[DETAIL_OFFSET + 6], BUFFER_SIZE, "Memory - %s", get_memory_usage());
 }
 
