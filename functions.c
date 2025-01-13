@@ -76,7 +76,7 @@ const char* get_uptime() {
 	return buffer;
 }
 
-int get_installed_packages() {
+int get_installed_packages_pacman() {
 	int package_count = 0;
 	DIR* dir = opendir("/var/lib/pacman/local");
 	if (dir) {
@@ -88,6 +88,52 @@ int get_installed_packages() {
 		}
 		closedir(dir);
 	}
+	return package_count;
+}
+
+int get_installed_packages_emerge() {
+	int package_count = 0;
+	DIR* dir = opendir("/var/db/pkg");
+	if (!dir)
+		return 0;
+
+	struct dirent* entry;
+	while ((entry = readdir(dir)) != NULL) {
+		if (!(entry->d_type == DT_DIR && entry->d_name[0] != '.'))
+			continue;
+
+		snprintf(buffer, BUFFER_SIZE, "/var/db/pkg/%s", entry->d_name);
+		DIR* dir2 = opendir(buffer);
+		if (!dir2)
+			continue;
+
+		struct dirent* entry2;
+		while ((entry2 = readdir(dir2)) != NULL) {
+			if (entry2->d_type == DT_DIR && entry2->d_name[0] != '.') {
+				package_count++;
+			}
+		}
+
+		closedir(dir2);
+	}
+
+	closedir(dir);
+	return package_count;
+}
+
+int get_installed_packages_dpkg() {
+	int package_count = 0;
+	FILE* file = fopen("/var/lib/dpkg/status", "r");
+	if (!file)
+		return 0;
+
+	while (fgets(buffer, BUFFER_SIZE, file)) {
+		if (strncmp(buffer, "Package:", 8) == 0) {
+			package_count++;
+		}
+	}
+
+	fclose(file);
 	return package_count;
 }
 

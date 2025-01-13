@@ -15,5 +15,7 @@ const char* get_distribution();
 const char* get_machine_name();
 const char* get_kernel();
 const char* get_uptime();
-int get_installed_packages();
+int get_installed_packages_pacman();
+int get_installed_packages_emerge();
+int get_installed_packages_dpkg();
 const char* get_memory_usage();

@@ -1,13 +1,27 @@
 #include "main.h"
 
 void setup_details() {
-	snprintf(details[DETAIL_OFFSET + 0], BUFFER_SIZE, "%s@%s", get_username(), get_hostname());
-	snprintf(details[DETAIL_OFFSET + 1], BUFFER_SIZE, "Distro - %s", get_distribution());
-	snprintf(details[DETAIL_OFFSET + 2], BUFFER_SIZE, "System - %s", get_machine_name());
-	snprintf(details[DETAIL_OFFSET + 3], BUFFER_SIZE, "Kernel - %s", get_kernel());
-	snprintf(details[DETAIL_OFFSET + 4], BUFFER_SIZE, "Uptime - %s", get_uptime());
-	snprintf(details[DETAIL_OFFSET + 5], BUFFER_SIZE, "Pacman - %d", get_installed_packages());
-	snprintf(details[DETAIL_OFFSET + 6], BUFFER_SIZE, "Memory - %s", get_memory_usage());
+	int row = 0;
+	int cnt;
+
+#define PRINT(...) if (DETAIL_OFFSET + row < LOGO_HEIGHT) snprintf(details[DETAIL_OFFSET + row++], BUFFER_SIZE, __VA_ARGS__)
+
+	PRINT("%s@%s", get_username(), get_hostname());
+	PRINT("Distro - %s", get_distribution());
+	PRINT("System - %s", get_machine_name());
+	PRINT("Kernel - %s", get_kernel());
+	PRINT("Uptime - %s", get_uptime());
+
+	if ((cnt = get_installed_packages_pacman()))
+		PRINT("Pacman - %d", cnt);
+	if ((cnt = get_installed_packages_emerge()))
+		PRINT("Emerge - %d", cnt);
+	if ((cnt = get_installed_packages_dpkg()))
+		PRINT("Dpkg   - %d", cnt);
+
+	PRINT("Memory - %s", get_memory_usage());
+
+#undef PRINT
 }
 
 int main(int argc, char *argv[]) {
