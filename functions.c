@@ -18,12 +18,11 @@ const char* get_distribution() {
 	if (file) {
 		while (fgets(buffer, BUFFER_SIZE, file)) {
 			if (strncmp(buffer, "PRETTY_NAME=", 12) == 0) {
-				char* name = buffer + 12;
+				char* name = buffer + 13;
 				name[strcspn(name, "\n")] = 0;
-				memmove(name, name + 1, strlen(name));
 				name[strlen(name) - 1] = '\0';
 				fclose(file);
-				return strdup(name);
+				return name;
 			}
 		}
 	}
@@ -127,7 +126,7 @@ static int get_installed_packages_dpkg() {
 	if (!file)
 		return 0;
 
-	while (fgets(buffer, BUFFER_SIZE, file)) {
+	while (fgets(buffer, BUFFER_SIZE, file)!=NULL) {
 		if (strncmp(buffer, "Package:", 8) == 0) {
 			package_count++;
 		}
@@ -144,7 +143,7 @@ int get_installed_packages() {
 }
 
 const char* get_memory_usage() {
-	static char buffer[BUFFER_SIZE];
+	static char buffer[BUFFER_SIZE]={0};
 	FILE* meminfo = fopen("/proc/meminfo", "r");
 
 	unsigned long total_mem = 0, free_mem = 0, buffers = 0, cached = 0, sreclaimable = 0, shmem = 0;
