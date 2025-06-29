@@ -126,7 +126,7 @@ static int get_installed_packages_dpkg() {
 	if (!file)
 		return 0;
 
-	while (fgets(buffer, BUFFER_SIZE, file)) {
+	while (fgets(buffer, BUFFER_SIZE, file)!=NULL) {
 		if (strncmp(buffer, "Package:", 8) == 0) {
 			package_count++;
 		}
@@ -143,7 +143,7 @@ int get_installed_packages() {
 }
 
 const char* get_memory_usage() {
-	static char buffer[BUFFER_SIZE];
+	static char buffer[BUFFER_SIZE]={0};
 	FILE* meminfo = fopen("/proc/meminfo", "r");
 
 	unsigned long total_mem = 0, free_mem = 0, buffers = 0, cached = 0, sreclaimable = 0, shmem = 0;
