@@ -18,12 +18,11 @@ const char* get_distribution() {
 	if (file) {
 		while (fgets(buffer, BUFFER_SIZE, file)) {
 			if (strncmp(buffer, "PRETTY_NAME=", 12) == 0) {
-				char* name = buffer + 12;
+				char* name = buffer + 13;
 				name[strcspn(name, "\n")] = 0;
-				memmove(name, name + 1, strlen(name));
 				name[strlen(name) - 1] = '\0';
 				fclose(file);
-				return strdup(name);
+				return name;
 			}
 		}
 	}
